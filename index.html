@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulário de Candidatura - Blue Lock Store</title>
+  <style>
+    body {
+      background-color: #0a0a1a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #e0e0ff;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #00aaff;
+      text-shadow: 0 0 10px #00aaff;
+    }
+
+    form {
+      background: #111133;
+      border: 1px solid #00aaff;
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px #005577;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #88ccff;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a3d;
+      border: 1px solid #00aaff;
+      border-radius: 10px;
+      color: white;
+    }
+
+    button {
+      background: #00aaff;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #0077cc;
+    }
+
+    #resultados {
+      margin-top: 40px;
+      background: #111133;
+      border: 1px solid #00aaff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #0077cc;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .candidato {
+      border-bottom: 1px solid #444;
+      padding: 10px 0;
+    }
+
+    .candidato:last-child {
+      border-bottom: none;
+    }
+
+    .titulo-resumo {
+      text-align: center;
+      color: #00aaff;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Formulário de Candidatura - ADM Blue Lock Store</h2>
+
+  <form id="formCandidatura">
+    <div class="form-group">
+      <label for="nome">Nome completo</label>
+      <input type="text" id="nome" name="nome" required />
+    </div>
+
+    <div class="form-group">
+      <label for="discord">Nome completo do Discord (com #tag ou @)</label>
+      <input type="text" id="discord" name="discord" placeholder="Ex: Suysbs#1234 ou @Suysbs" required />
+    </div>
+
+    <div class="form-group">
+      <label for="motivo">Por que você quer ser ADM da loja?</label>
+      <textarea id="motivo" name="motivo" rows="4" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="interesse">O que te interessa em Blue Lock?</label>
+      <textarea id="interesse" name="interesse" rows="3" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="calculos">Você é bom em cálculos?</label>
+      <select id="calculos" name="calculos" required>
+        <option value="">Selecione</option>
+        <option value="Sim">Sim</option>
+        <option value="Mais ou menos">Mais ou menos</option>
+        <option value="Não">Não</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="experiencia">Você já teve experiência com lojas virtuais ou atendimento ao cliente?</label>
+      <textarea id="experiencia" name="experiencia" rows="3" required></textarea>
+    </div>
+
+    <button type="submit">Enviar Candidatura</button>
+  </form>
+
+  <div id="resultados">
+    <h3 class="titulo-resumo">Entrevistas Finalizadas</h3>
+    <div id="listaCandidatos"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2j8YG9fQ2x64g6cHwVMIpCdSN9s1ydPk",
+      authDomain: "formulario-4901b.firebaseapp.com",
+      projectId: "formulario-4901b",
+      storageBucket: "formulario-4901b.firebasestorage.app",
+      messagingSenderId: "994920527355",
+      appId: "1:994920527355:web:650778b21cd27dc230875e",
+      measurementId: "G-Z5ZVB0FY9J",
+      databaseURL: "https://formulario-4901b-default-rtdb.firebaseio.com"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const form = document.getElementById("formCandidatura");
+    const lista = document.getElementById("listaCandidatos");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const nome = document.getElementById("nome").value;
+      const discord = document.getElementById("discord").value;
+      const motivo = document.getElementById("motivo").value;
+      const interesse = document.getElementById("interesse").value;
+      const calculos = document.getElementById("calculos").value;
+      const experiencia = document.getElementById("experiencia").value;
+
+      // Salvar no Firebase
+      const novoCandidato = db.ref("candidatos").push();
+      novoCandidato.set({
+        nome,
+        discord,
+        motivo,
+        interesse,
+        calculos,
+        experiencia
+      });
+
+      // Adicionar visualmente
+      const div = document.createElement("div");
+      div.classList.add("candidato");
+      div.innerHTML = `
+        <strong>Nome:</strong> ${nome}<br>
+        <strong>Discord:</strong> ${discord}<br>
+        <strong>Motivo:</strong> ${motivo}<br>
+        <strong>Interesse:</strong> ${interesse}<br>
+        <strong>Bom em cálculos?</strong> ${calculos}<br>
+        <strong>Experiência:</strong> ${experiencia}
+      `;
+
+      lista.appendChild(div);
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>
