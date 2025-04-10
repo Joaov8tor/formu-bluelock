@@ -164,6 +164,25 @@
     const form = document.getElementById("formCandidatura");
     const lista = document.getElementById("listaCandidatos");
 
+    // Carregar candidatos existentes
+    db.ref("candidatos").once("value", function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        const candidato = childSnapshot.val();
+        const div = document.createElement("div");
+        div.classList.add("candidato");
+        div.innerHTML = `
+          <strong>Nome:</strong> ${candidato.nome}<br>
+          <strong>Discord:</strong> ${candidato.discord}<br>
+          <strong>Motivo:</strong> ${candidato.motivo}<br>
+          <strong>Interesse:</strong> ${candidato.interesse}<br>
+          <strong>Bom em cálculos?</strong> ${candidato.calculos}<br>
+          <strong>Experiência:</strong> ${candidato.experiencia}
+        `;
+        lista.appendChild(div);
+      });
+    });
+
+    // Enviar novo candidato
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -196,8 +215,8 @@
         <strong>Bom em cálculos?</strong> ${calculos}<br>
         <strong>Experiência:</strong> ${experiencia}
       `;
-
       lista.appendChild(div);
+
       form.reset();
     });
   </script>
